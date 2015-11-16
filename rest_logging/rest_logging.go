@@ -46,7 +46,7 @@ func main() {
 	})
 
 	// Fire up the server
-	Info.Println("Starting the server on port 8081.")
-	//http.ListenAndServe("localhost:8081", router)
-	http.ListenAndServe(":8081", router)
+	Info.Println("Starting the server on port 8990.")
+	//http.ListenAndServe("localhost:3000", router)
+	http.ListenAndServe(":8990", router)
 }
