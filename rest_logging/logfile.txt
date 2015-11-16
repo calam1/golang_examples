@@ -1,0 +1,12 @@
+TRACE: 2015/11/15 20:40:58 rest_logging.go:36: Start of the spawn_job_process process.
+TRACE: 2015/11/15 20:40:58 rest_logging.go:38: Creating new httprouter to route RESTful paths.
+INFO: 2015/11/15 20:40:58 rest_logging.go:42: Setting up the handler for GET /test request.
+INFO: 2015/11/15 20:40:58 rest_logging.go:49: Starting the server on port 8081.
+TRACE: 2015/11/15 20:41:05 rest_logging.go:44: Handling the GET /test RESTful path.
+TRACE: 2015/11/15 20:41:07 rest_logging.go:44: Handling the GET /test RESTful path.
+TRACE: 2015/11/15 21:37:55 rest_logging.go:36: Start of the spawn_job_process process.
+TRACE: 2015/11/15 21:37:55 rest_logging.go:38: Creating new httprouter to route RESTful paths.
+INFO: 2015/11/15 21:37:55 rest_logging.go:42: Setting up the handler for GET /test request.
+INFO: 2015/11/15 21:37:55 rest_logging.go:49: Starting the server on port 8081.
+TRACE: 2015/11/15 21:38:00 rest_logging.go:44: Handling the GET /test RESTful path.
+TRACE: 2015/11/15 21:38:02 rest_logging.go:44: Handling the GET /test RESTful path.
