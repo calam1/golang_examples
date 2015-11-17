@@ -14,7 +14,7 @@ func init() {
 	fmt.Println("initialize block")
 }
 
-func getJobNames(dir string, writer http.ResponseWriter) {
+func getJobNames(dir string, c chan []string) {
 	list := make([]string, 0)
 	err := filepath.Walk(dir, func(dir string, f os.FileInfo, err error) error {
 		matched, err := filepath.Match("*.sh", f.Name())
@@ -30,16 +30,11 @@ func getJobNames(dir string, writer http.ResponseWriter) {
 		return nil
 	})
 
-	jobNames, err := json.Marshal(list)
-
 	if err != nil {
-		http.Error(writer, err.Error(), http.StatusInternalServerError)
-		return
+		fmt.Println(err)
 	}
 
-	writer.Header().Set("Content-Type", "application/json")
-	writer.Write(jobNames)
-
+	c <- list
 }
 
 func main() {
@@ -48,7 +43,18 @@ func main() {
 		flag.Parse()
 		dirRoot := flag.Arg(0)
 
-		getJobNames(dirRoot, writer)
+		var jobNameChannel chan []string = make(chan []string)
+		go getJobNames(dirRoot, jobNameChannel)
+		list := <-jobNameChannel
+		jobNames, err := json.Marshal(list)
+
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		writer.Header().Set("Content-Type", "application/json")
+		writer.Write(jobNames)
 	})
 
 	http.ListenAndServe(":8990", router)
