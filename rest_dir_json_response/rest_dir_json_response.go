@@ -11,8 +11,8 @@ import (
 )
 
 type JobName struct {
-	Name string
-	Path string
+	Name string `json:"name"`
+	Path string `json:"path"`
 }
 
 func init() {
@@ -46,7 +46,7 @@ func getJobNames(directory string) []JobName {
 }
 
 //usage i.e. curl localhost:8990?directory=/home/test/scripts/ if you want to pass in the path to search
-//otherwise if you want to use the directory where the golang process is started  don't add the directory param
+//otherwise if you want to use the directory where the golang process is started  don't add the directory param//if you want pretty print of the json, add the parameter prettyprint=true to the url
 func main() {
 	router := httprouter.New()
 	router.GET("/jobnames", func(writer http.ResponseWriter, request *http.Request, _ httprouter.Params) {
@@ -56,12 +56,22 @@ func main() {
 
 		//if url is passed this will override the passed argument at start up
 		directory := request.FormValue("directory")
+		//pretty print flag
+		prettyPrint := request.FormValue("prettyprint")
+
 		if directory != "" {
 			dirRoot = directory
 		}
 
 		list := getJobNames(dirRoot)
-		jobNames, err := json.Marshal(list)
+
+		var jobNames []byte
+		var err error
+		if prettyPrint == "true" {
+			jobNames, err = json.MarshalIndent(list, "", "    ")
+		} else {
+			jobNames, err = json.Marshal(list)
+		}
 
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
