@@ -14,7 +14,7 @@ func init() {
 	fmt.Println("initialize block")
 }
 
-func getJobNames(dir string, c chan []string) {
+func getJobNames(dir string) []string {
 	list := make([]string, 0)
 	err := filepath.Walk(dir, func(dir string, f os.FileInfo, err error) error {
 		matched, err := filepath.Match("*.sh", f.Name())
@@ -34,18 +34,23 @@ func getJobNames(dir string, c chan []string) {
 		fmt.Println(err)
 	}
 
-	c <- list
+	return list
 }
 
 func main() {
 	router := httprouter.New()
-	router.GET("/jobnames", func(writer http.ResponseWriter, router *http.Request, _ httprouter.Params) {
+	router.GET("/jobnames", func(writer http.ResponseWriter, request *http.Request, _ httprouter.Params) {
+		//we can take a commmand line argument if one is passed
 		flag.Parse()
 		dirRoot := flag.Arg(0)
 
-		var jobNameChannel chan []string = make(chan []string)
-		go getJobNames(dirRoot, jobNameChannel)
-		list := <-jobNameChannel
+		//if url is passed this will override the passed argument at start up
+		directory := request.FormValue("directory")
+		if directory != "" {
+			dirRoot = directory
+		}
+
+		list := getJobNames(dirRoot)
 		jobNames, err := json.Marshal(list)
 
 		if err != nil {
