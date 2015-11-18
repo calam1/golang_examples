@@ -10,13 +10,19 @@ import (
 	"path/filepath"
 )
 
+type JobName struct {
+	Name string
+	Path string
+}
+
 func init() {
 	fmt.Println("initialize block")
 }
 
-func getJobNames(dir string) []string {
-	list := make([]string, 0)
-	err := filepath.Walk(dir, func(dir string, f os.FileInfo, err error) error {
+//use of closure and anonymous function
+func getJobNames(directory string) []JobName {
+	list := make([]JobName, 0)
+	err := filepath.Walk(directory, func(dir string, f os.FileInfo, err error) error {
 		matched, err := filepath.Match("*.sh", f.Name())
 
 		if err != nil {
@@ -24,7 +30,9 @@ func getJobNames(dir string) []string {
 		}
 
 		if matched {
-			list = append(list, dir)
+			dirName, fileName := filepath.Split(dir)
+			jobName := JobName{fileName, dirName}
+			list = append(list, jobName)
 		}
 
 		return nil
@@ -37,6 +45,8 @@ func getJobNames(dir string) []string {
 	return list
 }
 
+//usage i.e. curl localhost:8990?directory=/home/test/scripts/ if you want to pass in the path to search
+//otherwise if you want to use the directory where the golang process is started  don't add the directory param
 func main() {
 	router := httprouter.New()
 	router.GET("/jobnames", func(writer http.ResponseWriter, request *http.Request, _ httprouter.Params) {
