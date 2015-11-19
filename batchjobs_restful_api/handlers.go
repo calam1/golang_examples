@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 )
 
-func JobNames(writer http.ResponseWriter, request *http.Request, _ httprouter.Params) {
+func JobsInfo(writer http.ResponseWriter, request *http.Request, _ httprouter.Params) {
 	//we can take a commmand line argument if one is passed
 	flag.Parse()
 	dirRoot := flag.Arg(0)
@@ -23,14 +23,15 @@ func JobNames(writer http.ResponseWriter, request *http.Request, _ httprouter.Pa
 		dirRoot = directory
 	}
 
-	list := getJobNames(dirRoot)
+	jobNames := getJobNames(dirRoot)
+	jobs := Jobs{jobNames}
 
-	var jobNames []byte
+	var jobsJson []byte
 	var err error
 	if prettyPrint == "true" {
-		jobNames, err = json.MarshalIndent(list, "", "    ")
+		jobsJson, err = json.MarshalIndent(jobs, "", "    ")
 	} else {
-		jobNames, err = json.Marshal(list)
+		jobsJson, err = json.Marshal(jobs)
 	}
 
 	if err != nil {
@@ -40,12 +41,12 @@ func JobNames(writer http.ResponseWriter, request *http.Request, _ httprouter.Pa
 
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusOK)
-	writer.Write(jobNames)
+	writer.Write(jobsJson)
 }
 
 //use of closure and anonymous function
 func getJobNames(directory string) []JobName {
-	list := make([]JobName, 0)
+	jobNames := make([]JobName, 0)
 	err := filepath.Walk(directory, func(dir string, f os.FileInfo, err error) error {
 		matched, err := filepath.Match("*.sh", f.Name())
 
@@ -55,8 +56,8 @@ func getJobNames(directory string) []JobName {
 
 		if matched {
 			dirName, fileName := filepath.Split(dir)
-			jobName := JobName{fileName, dirName}
-			list = append(list, jobName)
+			jobName := JobName{fileName, dirName, "/fakeurl/contents/", "/fakeurl/execute"}
+			jobNames = append(jobNames, jobName)
 		}
 
 		return nil
@@ -66,5 +67,5 @@ func getJobNames(directory string) []JobName {
 		fmt.Println(err)
 	}
 
-	return list
+	return jobNames
 }
