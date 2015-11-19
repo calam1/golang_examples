@@ -39,6 +39,7 @@ func JobNames(writer http.ResponseWriter, request *http.Request, _ httprouter.Pa
 	}
 
 	writer.Header().Set("Content-Type", "application/json")
+	writer.WriteHeader(http.StatusOK)
 	writer.Write(jobNames)
 }
 
