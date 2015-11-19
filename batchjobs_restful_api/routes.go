@@ -18,4 +18,9 @@ var routes = Routes{
 		"/jobs",
 		JobsInfo,
 	},
+	Route{
+		"GET",
+		"/jobs/job/:name",
+		JobContent,
+	},
 }
