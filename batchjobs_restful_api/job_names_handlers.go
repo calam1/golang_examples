@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/julienschmidt/httprouter"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -70,19 +69,4 @@ func getJobNames(directory string) []JobName {
 	}
 
 	return jobNames
-}
-
-func JobContent(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	directory := request.FormValue("directory")
-	fileName := params.ByName("name")
-	fullPath := directory + "/" + fileName
-
-	data, err := ioutil.ReadFile(fullPath)
-	if err != nil {
-		panic(err)
-	}
-
-	writer.Header().Set("Content-Type", "text/plain")
-	writer.WriteHeader(http.StatusOK)
-	writer.Write(data)
 }

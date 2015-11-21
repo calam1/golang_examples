@@ -23,4 +23,9 @@ var routes = Routes{
 		"/jobs/job/:name",
 		JobContent,
 	},
+	Route{
+		"POST",
+		"/jobs/job/:name",
+		RunJob,
+	},
 }
